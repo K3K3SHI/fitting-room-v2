@@ -1,0 +1,28 @@
+{
+  "name": "sareeai",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "16.3.5",
+    "pg": "8.23.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "replicate": "0.31.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.9",
+    "@types/pg": "8.15.6",
+    "@types/react": "19.0.0",
+    "@types/react-dom": "19.0.0",
+    "autoprefixer": "10.4.19",
+    "postcss": "8.5.28",
+    "tailwindcss": "3.4.4",
+    "typescript": "5.5.3"
+  }
+}
