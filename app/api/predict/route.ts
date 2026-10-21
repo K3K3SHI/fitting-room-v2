@@ -63,6 +63,17 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ error: 'Unknown stage.' }, { status: 400 });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message ?? 'Generation failed.' }, { status: 500 });
+    const message: string = err?.message ?? 'Generation failed.';
+    // Replicate throttles accounts with < $5 credit. Pass that through as a
+    // proper 429 (with the wait time) so the client can retry automatically.
+    if (err?.response?.status === 429 || /status 429/.test(message)) {
+      const m = message.match(/"retry_after"\s*:\s*(\d+)/);
+      const retryAfter = m ? Number(m[1]) : 8;
+      return NextResponse.json(
+        { error: 'Rate limited by Replicate. Retrying…', retryAfter },
+        { status: 429 }
+      );
+    }
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -10,25 +10,37 @@ const MAX_CONSECUTIVE_ERRORS = 8;
 
 export class PipelineError extends Error {}
 
+// Replicate throttles accounts under $5 credit (6 requests/min, burst of 1).
+// On a 429 we wait the time it asks for and try again instead of failing.
+const MAX_RATE_LIMIT_RETRIES = 6;
+
 async function createPrediction(payload: Record<string, unknown>): Promise<{ id: string }> {
-  const res = await fetch('/api/predict', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch('/api/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-  const raw = await res.text();
-  let data: any = {};
-  try {
-    data = raw ? JSON.parse(raw) : {};
-  } catch {
-    throw new PipelineError(`Server returned an unreadable response (HTTP ${res.status}).`);
-  }
+    const raw = await res.text();
+    let data: any = {};
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch {
+      throw new PipelineError(`Server returned an unreadable response (HTTP ${res.status}).`);
+    }
 
-  if (!res.ok || !data.id) {
-    throw new PipelineError(data.error || `Could not start generation (HTTP ${res.status}).`);
+    if (res.status === 429 && attempt < MAX_RATE_LIMIT_RETRIES) {
+      const waitSec = Math.min(Number(data.retryAfter) || 8, 30);
+      await sleep((waitSec + 1) * 1000);
+      continue;
+    }
+
+    if (!res.ok || !data.id) {
+      throw new PipelineError(data.error || `Could not start generation (HTTP ${res.status}).`);
+    }
+    return data;
   }
-  return data;
 }
 
 function sleep(ms: number) {
