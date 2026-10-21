@@ -17,7 +17,7 @@ export function getReplicateClient(): Replicate {
 // Text-to-image: generates the base model photo from a text description.
 // This is an "official" Replicate model, so predictions.create({ model })
 // works directly and always runs its latest version.
-export const MODEL_GEN_MODEL = 'black-forest-labs/flux-schnell';
+export const MODEL_GEN_MODEL = 'black-forest-labs/flux-1.1-pro';
 
 // Virtual try-on: dresses the generated model in the uploaded garment.
 // NOTE: cuuupid/idm-vton is CC BY-NC-SA 4.0 (non-commercial). Swap this for a

@@ -9,6 +9,14 @@
   --font-body: -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
+body {
+  /* Soft warm glow at the top so the dark canvas feels lit, not flat. */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(110, 31, 42, 0.35), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 100% 0%, rgba(216, 154, 44, 0.08), transparent 70%);
+  background-attachment: fixed;
+}
+
 ::selection {
   background: #D89A2C;
   color: #181310;
@@ -23,6 +31,17 @@
     transparent 12px
   );
   height: 1px;
+}
+
+/* Subtle film grain over the whole page */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 @media (prefers-reduced-motion: reduce) {
